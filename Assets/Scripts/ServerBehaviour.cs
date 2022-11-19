@@ -15,7 +15,6 @@ public class ServerBehaviour : MonoBehaviour
     [SerializeField]
     public GameObject m_vertexObject;
 
-    [SerializeField]
     public GameObject m_faceRoot;
 
     //public static int[] vertexNumbers = new int[] { 61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 130, 243, 463, 359 };
@@ -27,7 +26,9 @@ public class ServerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        m_faceRoot = GameObject.Find("Root");
         faceHelper = new FaceHelper(m_faceRoot);
+
         m_Driver = NetworkDriver.Create();
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = 9000;
@@ -38,7 +39,6 @@ public class ServerBehaviour : MonoBehaviour
             m_Driver.Listen();
             Debug.Log("Listening on port 9000");
         }
-        Debug.Log(endpoint.Address);
 
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
@@ -93,15 +93,6 @@ public class ServerBehaviour : MonoBehaviour
                     rotation.w = stream.ReadFloat();
                     m_faceRoot.transform.rotation = rotation;
                     faceHelper.HandleFaceUpdate(stream);
-                    //foreach (var vertexObject in vertexObjects)
-                    //{
-                    //    currentVertex.x = stream.ReadFloat();
-                    //    currentVertex.y = stream.ReadFloat();
-                    //    currentVertex.z = stream.ReadFloat();
-                        //vertexObject.transform.position = currentVertex * faceScale;
-                        //Debug.Log($"read vertex:{currentVertex}");
-                    //}
-                    //Debug.Log("Got " + data?.KeyPoints.Count + " vertices from the Client");
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
