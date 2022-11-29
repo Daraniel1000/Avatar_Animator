@@ -17,10 +17,9 @@ public class ServerBehaviour : MonoBehaviour
 
     public GameObject m_faceRoot;
 
-    //public static int[] vertexNumbers = new int[] { 61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 130, 243, 463, 359 };
-    public static int[] vertexNumbers = new int[] { 76, 73, 11, 303, 306, 404, 16, 180 };
-    private List<GameObject> vertexObjects = new List<GameObject>();
-    private readonly float faceScale = 20f;
+    public static int[] vertexNumbers = new int[] { 76, 73, 11, 303, 306, 404, 16, 180, 74, 184, 304, 408, 90, 77, 320, 307 };
+    //private List<GameObject> vertexObjects = new List<GameObject>();
+    //private readonly float faceScale = 20f;
     private FaceHelper faceHelper;
 
     // Start is called before the first frame update
@@ -78,7 +77,7 @@ public class ServerBehaviour : MonoBehaviour
                 continue;
             NetworkEvent.Type cmd;
             while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
-            {
+            {    
                 if (cmd == NetworkEvent.Type.Data)
                 {
                     Vector3 currentVertex = new Vector3();

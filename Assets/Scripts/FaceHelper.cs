@@ -12,43 +12,38 @@ namespace Assets.Scripts
             public Vector3 originalPos;
         }
 
-        private List<VertexObject> vertexBones { get; set; }
+        private List<GameObject> vertexBones { get; set; }
 
-        private Vector3 faceScale;
+        private float faceScale;
 
-        private static readonly string[][] boneNames = {
-            new[] { "Mouth.R" }, new[] { "Mouth.T.R" }, new[] { "Mouth.T.Center" }, new[] { "Mouth.T.L" }, 
-            new[] { "Mouth.L" }, new[] { "Mouth.B.L" }, new[] { "Mouth.B.Center" }, new[] { "Mouth.B.R" } };
+        private static readonly string[] boneNames = {
+            "Mouth.R","Mouth.T.R", "Mouth.T.Center", "Mouth.T.L", 
+            "Mouth.L", "Mouth.B.L", "Mouth.B.Center", "Mouth.B.R",
+            "Mouth.T.R.001", "Mouth.T.R.002", "Mouth.T.L.001",
+            "Mouth.T.L.002", "Mouth.B.R.001", "Mouth.B.R.002",
+            "Mouth.B.L.001", "Mouth.B.L.002"};
 
         public FaceHelper(GameObject root)
         {
-            faceScale = root.transform.lossyScale;
-            vertexBones = new List<VertexObject>();
-            foreach(string[] bones in boneNames)
+            faceScale = root.transform.lossyScale.x;
+            vertexBones = new List<GameObject>();
+            foreach(string bone in boneNames)
             {
-                VertexObject current = new VertexObject();
-                foreach (string bone in bones)
-                {
-                    GameObject boneObject = GameObject.Find(bone);
-                    if (boneObject == null) Debug.LogError($"{bone} object not found");
-                    current.Bones.Add(boneObject);
-                }
-                vertexBones.Add(current);
+                GameObject boneObject = GameObject.Find(bone);
+                if (boneObject == null) Debug.LogError($"{bone} object not found");
+                vertexBones.Add(boneObject);
             }
         }
 
         public void HandleFaceUpdate(DataStreamReader stream)
         {
             Vector3 currentVertex = new Vector3();
-            foreach (var vertexObject in vertexBones)
+            foreach (var bone in vertexBones)
             {
                 currentVertex.x = stream.ReadFloat();
                 currentVertex.y = stream.ReadFloat();
                 currentVertex.z = stream.ReadFloat();
-                foreach (GameObject bone in vertexObject.Bones)
-                {
-                    bone.transform.localPosition = currentVertex.divide(faceScale);
-                }
+                bone.transform.localPosition = currentVertex / faceScale;
             }
         }
     }
