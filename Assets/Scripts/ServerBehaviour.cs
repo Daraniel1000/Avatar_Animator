@@ -15,12 +15,12 @@ public class ServerBehaviour : MonoBehaviour
     [SerializeField]
     public GameObject m_vertexObject;
 
-    public GameObject m_faceRoot;
+    private GameObject m_faceRoot;
 
-    public static int[] vertexNumbers = new int[] { 76, 73, 11, 303, 306, 404, 16, 180, 74, 184, 304, 408, 90, 77, 320, 307 };
+    public static int[] vertexNumbers = new int[] { 76, 73, 11, 303, 306, 404, 16, 180, 74, 184, 304, 408, 90, 77, 320, 307, 175, 169, 394, 215, 435, 147, 214, 205, 376, 434, 425 };
     //private List<GameObject> vertexObjects = new List<GameObject>();
-    //private readonly float faceScale = 20f;
     private FaceHelper faceHelper;
+    private bool isClientReady = false;
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +47,29 @@ public class ServerBehaviour : MonoBehaviour
         //}
     }
 
+    private void SendVertexNumbers(NetworkConnection c)
+    {
+        m_Driver.BeginSend(c, out var writer);
+        writer.WriteInt(vertexNumbers.Length);
+        foreach (int vertex in vertexNumbers)
+        {
+            writer.WriteInt(vertex);
+        }
+        m_Driver.EndSend(writer);
+    }
+
+    public void UpdateAllClients()
+    {
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            if (m_Connections[i].IsCreated)
+            {
+                SendVertexNumbers(m_Connections[i]);
+            }
+        }
+        isClientReady = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -67,7 +90,7 @@ public class ServerBehaviour : MonoBehaviour
         while ((c = m_Driver.Accept()) != default(NetworkConnection))
         {
             m_Connections.Add(c);
-            Debug.Log("Accepted a connection");
+            Debug.Log($"Accepted a connection: {c.InternalId}");
         }
 
         DataStreamReader stream;
@@ -85,18 +108,21 @@ public class ServerBehaviour : MonoBehaviour
                     currentVertex.x = stream.ReadFloat();
                     currentVertex.y = stream.ReadFloat();
                     currentVertex.z = stream.ReadFloat();
-                    m_faceRoot.transform.position = currentVertex;
+                    m_faceRoot.transform.position = currentVertex * faceHelper.faceScale;
                     rotation.x = stream.ReadFloat();
                     rotation.y = stream.ReadFloat();
                     rotation.z = stream.ReadFloat();
                     rotation.w = stream.ReadFloat();
                     m_faceRoot.transform.rotation = rotation;
-                    faceHelper.HandleFaceUpdate(stream);
+                    //Debug.Log(stream.Length);
+                    if(stream.Length > 28)
+                        faceHelper.HandleFaceUpdate(stream);
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     Debug.Log("Client disconnected from server");
                     m_Connections[i] = default(NetworkConnection);
+                    isClientReady = false;
                 }
             }
         }
