@@ -1,10 +1,15 @@
 using UnityEngine;
 using UnityEngine.Assertions;
-
 using Unity.Collections;
 using Unity.Networking.Transport;
 using System.Collections.Generic;
 using Assets.Scripts;
+using UnityEngine.UI;
+using System.Net.Sockets;
+using System.Net;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -15,43 +20,53 @@ public class ServerBehaviour : MonoBehaviour
     [SerializeField]
     public GameObject m_vertexObject;
 
-    private GameObject m_faceRoot;
+    [SerializeField]
+    public Text fpsText;
+    [SerializeField]
+    public Text updateText;
 
-    public static int[] vertexNumbers = new int[] { 76, 73, 11, 303, 306, 404, 16, 180, 74, 184, 304, 408, 90, 77, 320, 307, 175, 169, 394, 215, 435, 147, 214, 205, 376, 434, 425 };
+    int m_frameCounter = 0;
+    float m_timeCounter = 0.0f;
+    float m_lastFramerate = 0.0f;
+    public float m_refreshTime = 0.5f;
+
     //private List<GameObject> vertexObjects = new List<GameObject>();
     private FaceHelper faceHelper;
-    private bool isClientReady = false;
+    private int nframes = 0;
+    private UDPReceiver receiver;
+    private BinaryFormatter formatter = new BinaryFormatter();
 
     // Start is called before the first frame update
     void Start()
     {
-        m_faceRoot = GameObject.Find("Root");
-        faceHelper = new FaceHelper(m_faceRoot);
+        faceHelper = new FaceHelper();
+        receiver = new UDPReceiver();
 
-        m_Driver = NetworkDriver.Create();
-        var endpoint = NetworkEndPoint.AnyIpv4;
-        endpoint.Port = 9000;
-        if (m_Driver.Bind(endpoint) != 0)
-            Debug.Log("Failed to bind to port 9000");
-        else
-        {
-            m_Driver.Listen();
-            Debug.Log("Listening on port 9000");
-        }
+        //m_Driver = NetworkDriver.Create();
+        //var endpoint = NetworkEndPoint.AnyIpv4;
+        //endpoint.Port = 9000;
+        //if (m_Driver.Bind(endpoint) != 0)
+        //    Debug.Log("Failed to bind to port 9000");
+        //else
+        //{
+        //    m_Driver.Listen();
+        //    Debug.Log("Listening on port 9000");
+        //}
 
-        m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+        //m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
         //foreach (var vertex in vertexNumbers)
         //{
         //    vertexObjects.Add(Instantiate(m_vertexObject));
         //}
+        Application.targetFrameRate = 60;
     }
 
     private void SendVertexNumbers(NetworkConnection c)
     {
         m_Driver.BeginSend(c, out var writer);
-        writer.WriteInt(vertexNumbers.Length);
-        foreach (int vertex in vertexNumbers)
+        writer.WriteInt(faceHelper.vertexNumbers.Count);
+        foreach (int vertex in faceHelper.vertexNumbers)
         {
             writer.WriteInt(vertex);
         }
@@ -67,65 +82,81 @@ public class ServerBehaviour : MonoBehaviour
                 SendVertexNumbers(m_Connections[i]);
             }
         }
-        isClientReady = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        m_Driver.ScheduleUpdate().Complete();
+        if (m_timeCounter < m_refreshTime)
+        {
+            m_timeCounter += Time.deltaTime;
+            m_frameCounter++;
+        }
+        else
+        {
+            m_lastFramerate = (float)m_frameCounter / m_timeCounter;
+            m_frameCounter = 0;
+            m_timeCounter = 0.0f;
+            fpsText.text = m_lastFramerate.ToString();
+        }
+        //m_Driver.ScheduleUpdate().Complete();
+        var message = receiver.PopLocalMessage();
+        if (message != null)
+        {
+            Debug.Log($"Local message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
+            //hands
+        }
+        message = receiver.PopMobileMessage();
+        if (message != null)
+        {
+            Debug.Log($"Mobile message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
+            updateText.text = $"{nframes} frames since last update";
+            nframes = 0;
+            var keypoints = JsonConvert.DeserializeObject<float[]>(System.Text.Encoding.ASCII.GetString(message, 0, message.Length));
+            faceHelper.HandleFaceUpdate(keypoints);
+        }
+        ++nframes;
 
         // Clean up connections
-        for (int i = 0; i < m_Connections.Length; i++)
-        {
-            if (!m_Connections[i].IsCreated)
-            {
-                m_Connections.RemoveAtSwapBack(i);
-                --i;
-            }
-        }
+        //for (int i = 0; i < m_Connections.Length; i++)
+        //{
+        //    if (!m_Connections[i].IsCreated)
+        //    {
+        //        m_Connections.RemoveAtSwapBack(i);
+        //        --i;
+        //    }
+        //}
 
         // Accept new connections
-        NetworkConnection c;
-        while ((c = m_Driver.Accept()) != default(NetworkConnection))
-        {
-            m_Connections.Add(c);
-            Debug.Log($"Accepted a connection: {c.InternalId}");
-        }
+        //NetworkConnection c;
+        //while ((c = m_Driver.Accept()) != default(NetworkConnection))
+        //{
+        //    m_Connections.Add(c);
+        //    Debug.Log($"Accepted a connection: {c.InternalId}");
+        //}
 
-        DataStreamReader stream;
-        for (int i = 0; i < m_Connections.Length; i++)
-        {
-            if (!m_Connections[i].IsCreated)
-                continue;
-            NetworkEvent.Type cmd;
-            while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
-            {    
-                if (cmd == NetworkEvent.Type.Data)
-                {
-                    Vector3 currentVertex = new Vector3();
-                    Quaternion rotation = new Quaternion();
-                    currentVertex.x = stream.ReadFloat();
-                    currentVertex.y = stream.ReadFloat();
-                    currentVertex.z = stream.ReadFloat();
-                    m_faceRoot.transform.position = currentVertex * faceHelper.faceScale;
-                    rotation.x = stream.ReadFloat();
-                    rotation.y = stream.ReadFloat();
-                    rotation.z = stream.ReadFloat();
-                    rotation.w = stream.ReadFloat();
-                    m_faceRoot.transform.rotation = rotation;
-                    //Debug.Log(stream.Length);
-                    if(stream.Length > 28)
-                        faceHelper.HandleFaceUpdate(stream);
-                }
-                else if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    Debug.Log("Client disconnected from server");
-                    m_Connections[i] = default(NetworkConnection);
-                    isClientReady = false;
-                }
-            }
-        }
+        //DataStreamReader stream;
+        //NetworkEvent.Type cmd;
+        //for (int i = 0; i < m_Connections.Length; i++)
+        //{
+        //    if (!m_Connections[i].IsCreated)
+        //        continue;
+        //    while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
+        //    {    
+        //        if (cmd == NetworkEvent.Type.Data)
+        //        {
+        //            faceHelper.HandleFaceUpdate(stream);
+        //            updateText.text = $"{nframes} frames since last update";
+        //            nframes = 0;
+        //        }
+        //        else if (cmd == NetworkEvent.Type.Disconnect)
+        //        {
+        //            Debug.Log("Client disconnected from server");
+        //            m_Connections[i] = default(NetworkConnection);
+        //        }
+        //    }
+        //    ++nframes; //1 connection only so it's fine
+        //}
     }
 
     public void OnDestroy()
@@ -135,5 +166,6 @@ public class ServerBehaviour : MonoBehaviour
             m_Driver.Dispose();
             m_Connections.Dispose();
         }
+        receiver.Close();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Unity.Networking.Transport;
 using UnityEngine;
 
@@ -15,20 +16,40 @@ namespace Assets.Scripts
 
         private List<GameObject> vertexBones { get; set; }
 
+        private GameObject faceRoot { get; set; }
+
         public float faceScale;
 
-        private static readonly string[] boneNames = {
-            "Mouth.R","Mouth.T.R", "Mouth.T.Center", "Mouth.T.L", 
-            "Mouth.L", "Mouth.B.L", "Mouth.B.Center", "Mouth.B.R",
-            "Mouth.T.R.001", "Mouth.T.R.002", "Mouth.T.L.001",
-            "Mouth.T.L.002", "Mouth.B.R.001", "Mouth.B.R.002",
-            "Mouth.B.L.001", "Mouth.B.L.002", "Jaw", "Jaw.R", "Jaw.L",
-            "Jaw.R.001", "Jaw.L.001", "Cheek.R", "Cheek.R.001",
-            "Cheek.R.002", "Cheek.L", "Cheek.L.001", "Cheek.L.002"};
+        private List<string> boneNames = new List<string>();
 
-        public FaceHelper(GameObject root)
+        public List<int> vertexNumbers { get; set; } = new List<int>();
+
+        public void readRigConfig()
         {
-            faceScale = root.transform.lossyScale.x;
+            try
+            {
+                StreamReader config = new StreamReader("Assets/RigVertices.txt");
+                string[] s;
+                boneNames.Clear();
+                vertexNumbers.Clear();
+                while (!config.EndOfStream)
+                {
+                    s = config.ReadLine().Split(' ');
+                    vertexNumbers.Add(Convert.ToInt32(s[0]));
+                    boneNames.Add(s[1]);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
+        }
+
+        public FaceHelper()
+        {
+            readRigConfig();
+            faceRoot = GameObject.Find("Root");
+            faceScale = faceRoot.transform.lossyScale.x;
             vertexBones = new List<GameObject>();
             foreach(string bone in boneNames)
             {
@@ -37,18 +58,47 @@ namespace Assets.Scripts
                 vertexBones.Add(boneObject);
             }
         }
+        public void HandleFaceUpdate(float[] vertices)
+        {
+            Vector3 currentVertex = new Vector3();
+            //currentVertex.x = vertices[0];
+            //currentVertex.y = vertices[1];
+            //currentVertex.z = vertices[2];
+            //faceRoot.transform.position = currentVertex * faceScale;
+            //faceRoot.transform.rotation = rotation;
+            int i = 0;
+            foreach (var bone in vertexBones)
+            {
+                currentVertex.x = vertices[i++];
+                currentVertex.y = vertices[i++];
+                currentVertex.z = vertices[i++];
+                bone.transform.localPosition = currentVertex;
+            }
+        }
 
         public void HandleFaceUpdate(DataStreamReader stream)
         {
-            int i = 0;
             Vector3 currentVertex = new Vector3();
-            foreach (var bone in vertexBones)
+            Quaternion rotation = new Quaternion();
+            currentVertex.x = stream.ReadFloat();
+            currentVertex.y = stream.ReadFloat();
+            currentVertex.z = stream.ReadFloat();
+            faceRoot.transform.position = currentVertex * faceScale;
+            rotation.x = stream.ReadFloat();
+            rotation.y = stream.ReadFloat();
+            rotation.z = stream.ReadFloat();
+            rotation.w = stream.ReadFloat();
+            faceRoot.transform.rotation = rotation;
+            if (stream.Length > 28)
             {
-                currentVertex.x = stream.ReadFloat();
-                currentVertex.y = stream.ReadFloat();
-                currentVertex.z = stream.ReadFloat();
-                bone.transform.localPosition = currentVertex;
-                ++i;
+            int i = 0;
+                foreach (var bone in vertexBones)
+                {
+                    currentVertex.x = stream.ReadFloat();
+                    currentVertex.y = stream.ReadFloat();
+                    currentVertex.z = stream.ReadFloat();
+                    bone.transform.localPosition = currentVertex;
+                }
             }
         }
     }
