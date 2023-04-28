@@ -10,6 +10,7 @@ using System.Net;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using Assets.Scenes.FaceTracking;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -109,15 +110,18 @@ public class ServerBehaviour : MonoBehaviour
         message = receiver.PopMobileMessage();
         if (message != null)
         {
-            Debug.Log($"Mobile message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
+            //Debug.Log($"Mobile message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
             updateText.text = $"{nframes} frames since last update";
-            nframes = 0;
-            var keypoints = JsonConvert.DeserializeObject<float[]>(System.Text.Encoding.ASCII.GetString(message, 0, message.Length));
-            faceHelper.HandleFaceUpdate(keypoints);
+            nframes = -1;
+            using (var stream = new MemoryStream(message))
+            {
+                faceHelper.HandleFaceUpdate(formatter.Deserialize(stream) as FaceKeypoints);
+            }
+            //var keypoints = JsonConvert.DeserializeObject<FaceKeypoints>(System.Text.Encoding.ASCII.GetString(message, 0, message.Length));
         }
         ++nframes;
 
-        // Clean up connections
+        //Clean up connections
         //for (int i = 0; i < m_Connections.Length; i++)
         //{
         //    if (!m_Connections[i].IsCreated)
@@ -127,7 +131,7 @@ public class ServerBehaviour : MonoBehaviour
         //    }
         //}
 
-        // Accept new connections
+        //Accept new connections
         //NetworkConnection c;
         //while ((c = m_Driver.Accept()) != default(NetworkConnection))
         //{
@@ -142,7 +146,7 @@ public class ServerBehaviour : MonoBehaviour
         //    if (!m_Connections[i].IsCreated)
         //        continue;
         //    while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
-        //    {    
+        //    {
         //        if (cmd == NetworkEvent.Type.Data)
         //        {
         //            faceHelper.HandleFaceUpdate(stream);
@@ -155,7 +159,6 @@ public class ServerBehaviour : MonoBehaviour
         //            m_Connections[i] = default(NetworkConnection);
         //        }
         //    }
-        //    ++nframes; //1 connection only so it's fine
         //}
     }
 

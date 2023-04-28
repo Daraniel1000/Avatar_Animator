@@ -11,5 +11,6 @@ namespace Assets.Scripts
             a.z /= b.z;
             return a;
         }
+
     }
 }

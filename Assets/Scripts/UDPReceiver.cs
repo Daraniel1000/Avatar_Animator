@@ -20,8 +20,8 @@ namespace Assets.Scripts
 
         public UDPReceiver()
         {
-            listener = new UdpClient(9000);
-            groupEP = new IPEndPoint(IPAddress.Any, 9000);
+            listener = new UdpClient(8080);
+            groupEP = new IPEndPoint(IPAddress.Any, 8080);
             task = ReceiveMessages();
         }
 
