@@ -11,6 +11,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using Assets.Scenes.FaceTracking;
+using MessagePack;
+using MessagePack.Resolvers;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -61,6 +63,14 @@ public class ServerBehaviour : MonoBehaviour
         //    vertexObjects.Add(Instantiate(m_vertexObject));
         //}
         Application.targetFrameRate = 60;
+        StaticCompositeResolver.Instance.Register(
+                 MessagePack.Resolvers.GeneratedResolver.Instance,
+                 MessagePack.Resolvers.StandardResolver.Instance
+            );
+
+        var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
+
+        MessagePackSerializer.DefaultOptions = option;
     }
 
     private void SendVertexNumbers(NetworkConnection c)
@@ -104,7 +114,8 @@ public class ServerBehaviour : MonoBehaviour
         var message = receiver.PopLocalMessage();
         if (message != null)
         {
-            Debug.Log($"Local message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
+            BodyData data = MessagePackSerializer.Deserialize<BodyData>(message);
+            Debug.Log($"Local message: {data.fps}");
             //hands
         }
         message = receiver.PopMobileMessage();
