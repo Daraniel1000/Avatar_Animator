@@ -1,14 +1,22 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scenes.FaceTracking
 {
+    [MessagePackObject(true)]
     [Serializable]
     public class Vec3
     {
         public float x, y, z;
 
+        public Vec3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
         public Vec3(Vector3 other)
         {
             x = other.x;
@@ -25,11 +33,19 @@ namespace Assets.Scenes.FaceTracking
         }
     }
 
+    [MessagePackObject(true)]
     [Serializable]
     public class Quat
     {
         public float x, y, z, w;
 
+        public Quat(float x, float y, float z, float w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
         public Quat(Quaternion other)
         {
             x = other.x;
@@ -47,6 +63,7 @@ namespace Assets.Scenes.FaceTracking
         }
     }
 
+    [MessagePackObject(true)]
     [Serializable]
     public class FaceKeypoints
     {

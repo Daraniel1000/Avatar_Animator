@@ -47,9 +47,14 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(1)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(6)
             {
-                { typeof(global::Assets.Scripts.BodyData), 0 },
+                { typeof(global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>), 0 },
+                { typeof(global::Assets.Scenes.FaceTracking.FaceKeypoints), 1 },
+                { typeof(global::Assets.Scenes.FaceTracking.Quat), 2 },
+                { typeof(global::Assets.Scenes.FaceTracking.Vec3), 3 },
+                { typeof(global::Assets.Scripts.BodyData), 4 },
+                { typeof(global::Assets.Scripts.FaceMediapipeData), 5 },
             };
         }
 
@@ -63,7 +68,12 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new MessagePack.Formatters.Assets.Scripts.BodyDataFormatter();
+                case 0: return new global::MessagePack.Formatters.ListFormatter<global::Assets.Scenes.FaceTracking.Vec3>();
+                case 1: return new MessagePack.Formatters.Assets.Scenes.FaceTracking.FaceKeypointsFormatter();
+                case 2: return new MessagePack.Formatters.Assets.Scenes.FaceTracking.QuatFormatter();
+                case 3: return new MessagePack.Formatters.Assets.Scenes.FaceTracking.Vec3Formatter();
+                case 4: return new MessagePack.Formatters.Assets.Scripts.BodyDataFormatter();
+                case 5: return new MessagePack.Formatters.Assets.Scripts.FaceMediapipeDataFormatter();
                 default: return null;
             }
         }
@@ -97,12 +107,274 @@ namespace MessagePack.Resolvers
 #pragma warning disable SA1403 // File may only contain a single namespace
 #pragma warning disable SA1649 // File name should match first type name
 
+namespace MessagePack.Formatters.Assets.Scenes.FaceTracking
+{
+    public sealed class FaceKeypointsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Assets.Scenes.FaceTracking.FaceKeypoints>
+    {
+        // vertices
+        private static global::System.ReadOnlySpan<byte> GetSpan_vertices() => new byte[1 + 8] { 168, 118, 101, 114, 116, 105, 99, 101, 115 };
+        // pos
+        private static global::System.ReadOnlySpan<byte> GetSpan_pos() => new byte[1 + 3] { 163, 112, 111, 115 };
+        // rot
+        private static global::System.ReadOnlySpan<byte> GetSpan_rot() => new byte[1 + 3] { 163, 114, 111, 116 };
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scenes.FaceTracking.FaceKeypoints value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            var formatterResolver = options.Resolver;
+            writer.WriteMapHeader(3);
+            writer.WriteRaw(GetSpan_vertices());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Serialize(ref writer, value.vertices, options);
+            writer.WriteRaw(GetSpan_pos());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Serialize(ref writer, value.pos, options);
+            writer.WriteRaw(GetSpan_rot());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Quat>(formatterResolver).Serialize(ref writer, value.rot, options);
+        }
+
+        public global::Assets.Scenes.FaceTracking.FaceKeypoints Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var formatterResolver = options.Resolver;
+            var length = reader.ReadMapHeader();
+            var ____result = new global::Assets.Scenes.FaceTracking.FaceKeypoints();
+
+            for (int i = 0; i < length; i++)
+            {
+                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                switch (stringKey.Length)
+                {
+                    default:
+                    FAIL:
+                      reader.Skip();
+                      continue;
+                    case 8:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 8315161591585858934UL) { goto FAIL; }
+
+                        ____result.vertices = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+                    case 3:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 7565168UL:
+                                ____result.pos = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 7630706UL:
+                                ____result.rot = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Quat>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                        }
+
+                }
+            }
+
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class QuatFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Assets.Scenes.FaceTracking.Quat>
+    {
+        // x
+        private static global::System.ReadOnlySpan<byte> GetSpan_x() => new byte[1 + 1] { 161, 120 };
+        // y
+        private static global::System.ReadOnlySpan<byte> GetSpan_y() => new byte[1 + 1] { 161, 121 };
+        // z
+        private static global::System.ReadOnlySpan<byte> GetSpan_z() => new byte[1 + 1] { 161, 122 };
+        // w
+        private static global::System.ReadOnlySpan<byte> GetSpan_w() => new byte[1 + 1] { 161, 119 };
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scenes.FaceTracking.Quat value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            writer.WriteMapHeader(4);
+            writer.WriteRaw(GetSpan_x());
+            writer.Write(value.x);
+            writer.WriteRaw(GetSpan_y());
+            writer.Write(value.y);
+            writer.WriteRaw(GetSpan_z());
+            writer.Write(value.z);
+            writer.WriteRaw(GetSpan_w());
+            writer.Write(value.w);
+        }
+
+        public global::Assets.Scenes.FaceTracking.Quat Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var length = reader.ReadMapHeader();
+            var __x__ = default(float);
+            var __y__ = default(float);
+            var __z__ = default(float);
+            var __w__ = default(float);
+
+            for (int i = 0; i < length; i++)
+            {
+                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                switch (stringKey.Length)
+                {
+                    default:
+                    FAIL:
+                      reader.Skip();
+                      continue;
+                    case 1:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 120UL:
+                                __x__ = reader.ReadSingle();
+                                continue;
+                            case 121UL:
+                                __y__ = reader.ReadSingle();
+                                continue;
+                            case 122UL:
+                                __z__ = reader.ReadSingle();
+                                continue;
+                            case 119UL:
+                                __w__ = reader.ReadSingle();
+                                continue;
+                        }
+
+                }
+            }
+
+            var ____result = new global::Assets.Scenes.FaceTracking.Quat(__x__, __y__, __z__, __w__);
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class Vec3Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Assets.Scenes.FaceTracking.Vec3>
+    {
+        // x
+        private static global::System.ReadOnlySpan<byte> GetSpan_x() => new byte[1 + 1] { 161, 120 };
+        // y
+        private static global::System.ReadOnlySpan<byte> GetSpan_y() => new byte[1 + 1] { 161, 121 };
+        // z
+        private static global::System.ReadOnlySpan<byte> GetSpan_z() => new byte[1 + 1] { 161, 122 };
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scenes.FaceTracking.Vec3 value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            writer.WriteMapHeader(3);
+            writer.WriteRaw(GetSpan_x());
+            writer.Write(value.x);
+            writer.WriteRaw(GetSpan_y());
+            writer.Write(value.y);
+            writer.WriteRaw(GetSpan_z());
+            writer.Write(value.z);
+        }
+
+        public global::Assets.Scenes.FaceTracking.Vec3 Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var length = reader.ReadMapHeader();
+            var __x__ = default(float);
+            var __y__ = default(float);
+            var __z__ = default(float);
+
+            for (int i = 0; i < length; i++)
+            {
+                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                switch (stringKey.Length)
+                {
+                    default:
+                    FAIL:
+                      reader.Skip();
+                      continue;
+                    case 1:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 120UL:
+                                __x__ = reader.ReadSingle();
+                                continue;
+                            case 121UL:
+                                __y__ = reader.ReadSingle();
+                                continue;
+                            case 122UL:
+                                __z__ = reader.ReadSingle();
+                                continue;
+                        }
+
+                }
+            }
+
+            var ____result = new global::Assets.Scenes.FaceTracking.Vec3(__x__, __y__, __z__);
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+}
+
+#pragma warning restore 168
+#pragma warning restore 414
+#pragma warning restore 618
+#pragma warning restore 612
+
+#pragma warning restore SA1129 // Do not use default value type constructor
+#pragma warning restore SA1309 // Field names should not begin with underscore
+#pragma warning restore SA1312 // Variable names should begin with lower-case letter
+#pragma warning restore SA1403 // File may only contain a single namespace
+#pragma warning restore SA1649 // File name should match first type name
+
+// <auto-generated>
+// THIS (.cs) FILE IS GENERATED BY MPC(MessagePack-CSharp). DO NOT CHANGE IT.
+// </auto-generated>
+
+#pragma warning disable 618
+#pragma warning disable 612
+#pragma warning disable 414
+#pragma warning disable 168
+#pragma warning disable CS1591 // document public APIs
+
+#pragma warning disable SA1129 // Do not use default value type constructor
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
+#pragma warning disable SA1403 // File may only contain a single namespace
+#pragma warning disable SA1649 // File name should match first type name
+
 namespace MessagePack.Formatters.Assets.Scripts
 {
     public sealed class BodyDataFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Assets.Scripts.BodyData>
     {
-        // fps
-        private static global::System.ReadOnlySpan<byte> GetSpan_fps() => new byte[1 + 3] { 163, 102, 112, 115 };
+        // Face
+        private static global::System.ReadOnlySpan<byte> GetSpan_Face() => new byte[1 + 4] { 164, 70, 97, 99, 101 };
+        // Body
+        private static global::System.ReadOnlySpan<byte> GetSpan_Body() => new byte[1 + 4] { 164, 66, 111, 100, 121 };
+        // HandL
+        private static global::System.ReadOnlySpan<byte> GetSpan_HandL() => new byte[1 + 5] { 165, 72, 97, 110, 100, 76 };
+        // HandR
+        private static global::System.ReadOnlySpan<byte> GetSpan_HandR() => new byte[1 + 5] { 165, 72, 97, 110, 100, 82 };
 
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scripts.BodyData value, global::MessagePack.MessagePackSerializerOptions options)
         {
@@ -112,9 +384,16 @@ namespace MessagePack.Formatters.Assets.Scripts
                 return;
             }
 
-            writer.WriteMapHeader(1);
-            writer.WriteRaw(GetSpan_fps());
-            writer.Write(value.fps);
+            var formatterResolver = options.Resolver;
+            writer.WriteMapHeader(4);
+            writer.WriteRaw(GetSpan_Face());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scripts.FaceMediapipeData>(formatterResolver).Serialize(ref writer, value.Face, options);
+            writer.WriteRaw(GetSpan_Body());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Serialize(ref writer, value.Body, options);
+            writer.WriteRaw(GetSpan_HandL());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Serialize(ref writer, value.HandL, options);
+            writer.WriteRaw(GetSpan_HandR());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Serialize(ref writer, value.HandR, options);
         }
 
         public global::Assets.Scripts.BodyData Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -125,6 +404,7 @@ namespace MessagePack.Formatters.Assets.Scripts
             }
 
             options.Security.DepthStep(ref reader);
+            var formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
             var ____result = new global::Assets.Scripts.BodyData();
 
@@ -137,10 +417,108 @@ namespace MessagePack.Formatters.Assets.Scripts
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 3:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 7565414UL) { goto FAIL; }
+                    case 4:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 1701011782UL:
+                                ____result.Face = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scripts.FaceMediapipeData>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 2036625218UL:
+                                ____result.Body = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                        }
+                    case 5:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 328102469960UL:
+                                ____result.HandL = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 353872273736UL:
+                                ____result.HandR = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                        }
 
-                        ____result.fps = reader.ReadInt32();
+                }
+            }
+
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class FaceMediapipeDataFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Assets.Scripts.FaceMediapipeData>
+    {
+        // TopLeft
+        private static global::System.ReadOnlySpan<byte> GetSpan_TopLeft() => new byte[1 + 7] { 167, 84, 111, 112, 76, 101, 102, 116 };
+        // TopRight
+        private static global::System.ReadOnlySpan<byte> GetSpan_TopRight() => new byte[1 + 8] { 168, 84, 111, 112, 82, 105, 103, 104, 116 };
+        // BottomLeft
+        private static global::System.ReadOnlySpan<byte> GetSpan_BottomLeft() => new byte[1 + 10] { 170, 66, 111, 116, 116, 111, 109, 76, 101, 102, 116 };
+        // BottomRight
+        private static global::System.ReadOnlySpan<byte> GetSpan_BottomRight() => new byte[1 + 11] { 171, 66, 111, 116, 116, 111, 109, 82, 105, 103, 104, 116 };
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scripts.FaceMediapipeData value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            var formatterResolver = options.Resolver;
+            writer.WriteMapHeader(4);
+            writer.WriteRaw(GetSpan_TopLeft());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Serialize(ref writer, value.TopLeft, options);
+            writer.WriteRaw(GetSpan_TopRight());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Serialize(ref writer, value.TopRight, options);
+            writer.WriteRaw(GetSpan_BottomLeft());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Serialize(ref writer, value.BottomLeft, options);
+            writer.WriteRaw(GetSpan_BottomRight());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Serialize(ref writer, value.BottomRight, options);
+        }
+
+        public global::Assets.Scripts.FaceMediapipeData Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var formatterResolver = options.Resolver;
+            var length = reader.ReadMapHeader();
+            var ____result = new global::Assets.Scripts.FaceMediapipeData();
+
+            for (int i = 0; i < length; i++)
+            {
+                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                switch (stringKey.Length)
+                {
+                    default:
+                    FAIL:
+                      reader.Skip();
+                      continue;
+                    case 7:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 32763682558603092UL) { goto FAIL; }
+
+                        ____result.TopLeft = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+                    case 8:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 8388068008029876052UL) { goto FAIL; }
+
+                        ____result.TopRight = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+                    case 10:
+                        if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_BottomLeft().Slice(1))) { goto FAIL; }
+
+                        ____result.BottomLeft = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+                    case 11:
+                        if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_BottomRight().Slice(1))) { goto FAIL; }
+
+                        ____result.BottomRight = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Assets.Scenes.FaceTracking.Vec3>(formatterResolver).Deserialize(ref reader, options);
                         continue;
 
                 }

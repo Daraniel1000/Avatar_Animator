@@ -183,8 +183,9 @@ namespace Assets.Scripts
 
         public void HandleFaceUpdate(FaceKeypoints keypoints)
         {
-            faceRoot.transform.position = keypoints.pos.ToVector() * faceScale;
-            faceRoot.transform.rotation = keypoints.rot.ToQuaternion();
+            //This will only handle face expressions from now
+            //faceRoot.transform.position = keypoints.pos.ToVector() * faceScale;
+            //faceRoot.transform.rotation = keypoints.rot.ToQuaternion();
             if (keypoints.vertices.Count > 0)
             {
                 int i = 0;

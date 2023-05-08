@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Assets.Scenes.FaceTracking;
 using MessagePack;
 using MessagePack.Resolvers;
+using Assets.Scripts.Helpers;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -20,21 +21,19 @@ public class ServerBehaviour : MonoBehaviour
     public NetworkDriver m_Driver;
     private NativeList<NetworkConnection> m_Connections;
 
-    [SerializeField]
     public GameObject m_vertexObject;
 
-    [SerializeField]
     public Text fpsText;
-    [SerializeField]
     public Text updateText;
+    public Text updateTextMediapipe;
 
     int m_frameCounter = 0;
     float m_timeCounter = 0.0f;
     float m_lastFramerate = 0.0f;
     public float m_refreshTime = 0.5f;
 
-    //private List<GameObject> vertexObjects = new List<GameObject>();
     private FaceHelper faceHelper;
+    private BodyHelper bodyHelper;
     private int nframes = 0;
     private UDPReceiver receiver;
     private BinaryFormatter formatter = new BinaryFormatter();
@@ -43,7 +42,16 @@ public class ServerBehaviour : MonoBehaviour
     void Start()
     {
         faceHelper = new FaceHelper();
-        receiver = new UDPReceiver();
+        bodyHelper = new BodyHelper(m_vertexObject);
+        try
+        {
+            receiver = new UDPReceiver();
+        }
+        catch (SocketException e)
+        {
+            Debug.LogException(e);
+            Application.Quit();
+        }
 
         //m_Driver = NetworkDriver.Create();
         //var endpoint = NetworkEndPoint.AnyIpv4;
@@ -114,15 +122,18 @@ public class ServerBehaviour : MonoBehaviour
         var message = receiver.PopLocalMessage();
         if (message != null)
         {
+            updateTextMediapipe.text = $"MediaPipe: {nframes} since";
+            nframes = -1;
             BodyData data = MessagePackSerializer.Deserialize<BodyData>(message);
-            Debug.Log($"Local message: {data.fps}");
+            bodyHelper.HandleBodyUpdate(data);
+            //Debug.Log($"Local message: {data.fps}");
             //hands
         }
         message = receiver.PopMobileMessage();
         if (message != null)
         {
             //Debug.Log($"Mobile message: {System.Text.Encoding.ASCII.GetString(message, 0, message.Length)}");
-            updateText.text = $"{nframes} frames since last update";
+            updateText.text = $"ArCore: {nframes} since";
             nframes = -1;
             using (var stream = new MemoryStream(message))
             {

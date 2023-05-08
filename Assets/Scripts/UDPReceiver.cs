@@ -11,8 +11,6 @@ namespace Assets.Scripts
     public class UDPReceiver
     {
         private UdpClient listener;
-        private IPEndPoint groupEP;
-        private Mutex mutex;
         private Queue<byte[]> messagesLocal = new Queue<byte[]>();
         private Queue<byte[]> messagesMobile = new Queue<byte[]>();
         private bool stop = false;
@@ -20,8 +18,7 @@ namespace Assets.Scripts
 
         public UDPReceiver()
         {
-            listener = new UdpClient(8080);
-            groupEP = new IPEndPoint(IPAddress.Any, 8080);
+            listener = new UdpClient(9000);
             task = ReceiveMessages();
         }
 
