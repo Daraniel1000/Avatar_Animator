@@ -25,6 +25,12 @@ namespace Assets.Scripts
             return a;
         }
 
+        public static Vector3 scaleX(this Vector3 a, float scale)
+        {
+            a.x *= scale;
+            return a;
+        }
+
         public static float Find2DAngle(float cx, float cy, float ex, float ey)
         {
             var dy = ey - cy;

@@ -56,7 +56,7 @@ namespace Assets.Scripts
             readRigConfig();
             faceRoot = GameObject.Find("Root");
             faceRoot1 = GameObject.Find("Root.001");
-            faceScale = faceRoot.transform.lossyScale.x;
+            faceScale = faceRoot?.transform.lossyScale.x ?? 1;
             vertexBones = new List<GameObject>();
             foreach(string bone in boneNames)
             {

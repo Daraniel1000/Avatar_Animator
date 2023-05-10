@@ -1037,6 +1037,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BodyTest1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 39b40cc966eb6fc4ea48e40ce24f08c0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4680126187949839211, guid: 39b40cc966eb6fc4ea48e40ce24f08c0, type: 3}
       propertyPath: m_LocalScale.y
       value: 1.0000001

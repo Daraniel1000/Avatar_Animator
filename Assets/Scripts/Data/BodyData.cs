@@ -7,18 +7,21 @@ namespace Assets.Scripts
     [MessagePackObject(true)]
     public class BodyData
     {
-        public FaceMediapipeData Face { get; set; }
         public List<Vec3> Body { get; set; }
-        public List<Vec3> HandL { get; set; }
-        public List<Vec3> HandR { get; set; }
+        public HandsMediapipeData Hands { get; set; }
     }
 
     [MessagePackObject(true)]
-    public class FaceMediapipeData
+    public class HandsMediapipeData
     {
-        public Vec3 TopLeft { get; set; }
-        public Vec3 TopRight { get; set; }
-        public Vec3 BottomLeft { get; set; }
-        public Vec3 BottomRight { get; set; }
+        public List<List<Vec3>> Landmarks { get; set; }
+        public List<MultiHandednessData> MultiHandedness { get; set;}
+    }
+
+    [MessagePackObject(true)]
+    public class MultiHandednessData
+    {
+        public int index { get; set; }
+        public string label { get; set; }
     }
 }
