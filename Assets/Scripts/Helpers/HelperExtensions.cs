@@ -69,39 +69,6 @@ namespace Assets.Scripts
             return new Vector3(alpha.NormalizeAngle(), beta.NormalizeAngle(), gamma.NormalizeAngle());
         }
 
-        public static float Remap(this float val, float min, float max) => (Math.Clamp(val, min, max) - min) / (max - min);
-
-        public static Vector3 FindRotation(Vector3 vector, Vector3 other)
-        {
-            Vector3 result = new(
-                Find2DAngle(vector.z, vector.y, other.z, other.y).NormalizeAngle(),
-                Find2DAngle(vector.z, vector.x, other.z, other.x).NormalizeAngle(),
-                Find2DAngle(vector.x, vector.y, other.x, other.y).NormalizeAngle()
-             );
-
-            //if (normalize)
-            //{
-            //    return result.normalized;
-            //}
-
-            return result;
-        }
-
-        /// Find 2D angle between 3 points in 3D space. Returns a single angle normalized to 0, 1
-        public static float AngleBetween3DCoords(Vector3 a, Vector3 b, Vector3 c)
-        {
-            var vec1 = a - b;
-            var vec2 = c - b;
-
-            var vec1Norm = Unit(vec1);
-            var vec2Norm = Unit(vec2);
-
-            var dotProducts = Vector3.Dot(vec1Norm, vec2Norm);
-            var angle = MathF.Acos(dotProducts);
-
-            return NormalizeRadians(angle);
-        }
-
         public static float NormalizeRadians(float radians)
         {
             if (radians >= MathF.PI / 2)

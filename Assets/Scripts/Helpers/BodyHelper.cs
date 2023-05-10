@@ -10,14 +10,11 @@ namespace Assets.Scripts.Helpers
         private readonly Bone neckTarget;
         private readonly BoneRot faceBone, spine1;
         private readonly List<GameObject> previewObjects = new(33);
-        private readonly Vector3 shoulderBasePos;
         private readonly GameObject rArmRoot, lArmRoot, shoulderBone;
 
         public BodyHelper(GameObject prefab)
         {
             faceBone = new BoneRot("Root");
-            //shoulderBone = new BoneRot("Body");
-            //shoulderBasePos = shoulderBone.bone.transform.position;
             spine1 = new BoneRot("Spine.001");
 
             leftArmTarget = new BonePos("LH IK Target");
@@ -29,7 +26,6 @@ namespace Assets.Scripts.Helpers
             rArmRoot = GameObject.Find("Arm.R");
             lArmRoot = GameObject.Find("Arm.L");
             shoulderBone = GameObject.Find("Body");
-            shoulderBasePos = shoulderBone.transform.position;
 
             for (int i = 0; i<=33; ++i)
             {
@@ -46,11 +42,7 @@ namespace Assets.Scripts.Helpers
             Vector3 shoulderRot = GetShoulderRot(data);
             spine1.SetRotation(Quaternion.Euler(shoulderRot * 180));
 
-            // Get scale for location based rig
-            Vector3 shoulderMidpoint = Vector3.Lerp(data.Body[12].ToVector(), data.Body[11].ToVector(), 0.5f).scaleY(-1);
-            Vector3 rigTransform = shoulderBasePos - shoulderMidpoint;
-
-            // Set arm rig locations
+            // Arm location rig
             Vector3 rArmOffset = rArmRoot.transform.position - data.Body[12].ToVector().scaleY(-1);
             Vector3 lArmOffset = lArmRoot.transform.position - data.Body[11].ToVector().scaleY(-1);
             rightArmTarget.SetPosition(data.Body[16].ToVector().scaleY(-1) + rArmOffset);
@@ -58,16 +50,8 @@ namespace Assets.Scripts.Helpers
             leftArmTarget.SetPosition(data.Body[15].ToVector().scaleY(-1) + lArmOffset);
             leftArmHint.SetPosition(1.1f*(data.Body[13].ToVector().scaleY(-1) + lArmOffset));
 
-            // Show preview points
-            for (int i = 0; i < data.Body.Count; ++i)
-            {
-                previewObjects[i].transform.position = data.Body[i].ToVector().scaleY(-1) + rigTransform;
-                previewObjects[i].name = i.ToString();
-            }
-            Vector3 pelvisMidpoint = Vector3.Lerp(data.Body[23].ToVector(), data.Body[24].ToVector(), .5f).scaleY(-1);
-            previewObjects[33].transform.position = pelvisMidpoint;
-
             // Neck location rig
+            Vector3 shoulderMidpoint = Vector3.Lerp(data.Body[12].ToVector(), data.Body[11].ToVector(), 0.5f).scaleY(-1);
             Vector3 headMidpoint = Vector3.Lerp(data.Body[8].ToVector(), data.Body[7].ToVector(), 0.5f).scaleY(-1.1f);
             neckTarget.SetRelativePosition(headMidpoint, shoulderBone.transform.position - shoulderMidpoint);
             neckTarget.SetRotation(Quaternion.Euler(faceRot * 180));
