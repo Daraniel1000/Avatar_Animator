@@ -12,13 +12,13 @@ namespace Assets.Scripts
     {
         private UdpClient listener;
         private Queue<byte[]> messagesLocal = new Queue<byte[]>();
-        private Queue<byte[]> messagesMobile = new Queue<byte[]>();
+        private byte[] messagesMobile = null;
         private bool stop = false;
         public Task task;
 
         public UDPReceiver()
         {
-            listener = new UdpClient(8080);
+            listener = new UdpClient(9000);
             task = ReceiveMessages();
         }
 
@@ -37,7 +37,7 @@ namespace Assets.Scripts
                         }
                         else
                         {
-                            messagesMobile.Enqueue(receiveResult.Buffer);
+                            messagesMobile = receiveResult.Buffer;
                         }
                     }
                 }
@@ -66,9 +66,16 @@ namespace Assets.Scripts
         {
             lock (this)
             {
-                if (messagesMobile.Count == 0)
+                //if (messagesMobile.Count == 0)
+                //    return null;
+                if (messagesMobile == null)
                     return null;
-                return messagesMobile.Dequeue();
+                else
+                {
+                    var arr = messagesMobile;
+                    messagesMobile = null;
+                    return arr;
+                }
             }
         }
 

@@ -36,19 +36,19 @@ namespace Assets.Scripts.Helpers
 
         public void Preview(BodyData data)
         {
-            if (data.Hands.Landmarks.Count > 0)
-            {
-                for (int i = 0; i < data.Hands.Landmarks[0].Count; i++)
-                {
-                    previewObjects[i].transform.position = data.Hands.Landmarks[0][i].ToVector().scaleY(-1);
-                    previewObjects[i].name = i.ToString();
-                }
-            }
-            //for (int i = 0; i < data.Body.Count; i++)
+            //if (data.Hands.Landmarks.Count > 0)
             //{
-            //    previewObjects[i].transform.position = data.Body[i].ToVector().scaleY(scaleY);
-            //    previewObjects[i].name = i.ToString();
+            //    for (int i = 0; i < data.Hands.Landmarks[0].Count; i++)
+            //    {
+            //        previewObjects[i].transform.position = data.Hands.Landmarks[0][i].ToVector().scaleY(-1);
+            //        previewObjects[i].name = i.ToString();
+            //    }
             //}
+            for (int i = 0; i < data.Body.Count; i++)
+            {
+                previewObjects[i].transform.position = data.Body[i].ToVector().scaleY(scaleY);
+                previewObjects[i].name = i.ToString();
+            }
         }
 
         public void HandleBodyUpdate(BodyData data)

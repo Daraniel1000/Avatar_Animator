@@ -49,19 +49,51 @@ public class ServerBehaviour : MonoBehaviour
             Application.Quit();
         }
 
-        Application.targetFrameRate = 60;
         StaticCompositeResolver.Instance.Register(
                  MessagePack.Resolvers.GeneratedResolver.Instance,
                  MessagePack.Resolvers.StandardResolver.Instance
             );
-
         var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
-
         MessagePackSerializer.DefaultOptions = option;
+
+        //Application.targetFrameRate = 60;
+    }
+
+    public void CalibrateFace()
+    {
+        faceHelper.CalibrateFace();
     }
 
     // Update is called once per frame
     void Update()
+    {
+        CalculateFramerate();
+
+        var message = receiver.PopLocalMessage();
+        if (message != null)
+        {
+            updateTextMediapipe.text = $"MediaPipe: {nframes} since";
+            nframes = -1;
+            BodyData data = MessagePackSerializer.Deserialize<BodyData>(message);
+            bodyHelper.Preview(data);
+            bodyHelper.HandleBodyUpdate(data);
+        }
+        message = receiver.PopMobileMessage();
+        if (message != null)
+        {
+            updateText.text = $"ArCore: {nframes1} since";
+            nframes1 = -1;
+            using (var stream = new MemoryStream(message))
+            {
+                faceHelper.HandleFaceUpdate(formatter.Deserialize(stream) as FaceKeypoints);
+            }
+        }
+
+        ++nframes;
+        ++nframes1;
+    }
+
+    private void CalculateFramerate()
     {
         if (m_timeCounter < m_refreshTime)
         {
@@ -75,28 +107,6 @@ public class ServerBehaviour : MonoBehaviour
             m_timeCounter = 0.0f;
             fpsText.text = m_lastFramerate.ToString();
         }
-
-        var message = receiver.PopLocalMessage();
-        if (message != null)
-        {
-            updateTextMediapipe.text = $"MediaPipe: {nframes} since";
-            nframes = -1;
-            BodyData data = MessagePackSerializer.Deserialize<BodyData>(message);
-            bodyHelper.Preview(data);
-            //bodyHelper.HandleBodyUpdate(data);
-        }
-        message = receiver.PopMobileMessage();
-        if (message != null)
-        {
-            updateText.text = $"ArCore: {nframes1} since";
-            nframes1 = -1;
-            using (var stream = new MemoryStream(message))
-            {
-                faceHelper.HandleFaceUpdate(formatter.Deserialize(stream) as FaceKeypoints);
-            }
-        }
-        ++nframes;
-        ++nframes1;
     }
 
     public void OnDestroy()
