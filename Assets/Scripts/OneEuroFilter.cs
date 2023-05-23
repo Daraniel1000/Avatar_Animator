@@ -43,6 +43,7 @@ class LowPassFilter
             result = _value;
             initialized = true;
         }
+        //Debug.Log($"s={s} a={a} val={_value}");
         y = _value;
         s = result;
         return result;
@@ -153,6 +154,9 @@ public class OneEuroFilter
 
     public float Filter(float value, float timestamp = -1.0f)
     {
+        // if updating twice in a frame, cancel update
+        if (timestamp == lasttime)
+            return currValue;
         // update the sampling frequency based on timestamps
         if (lasttime != -1.0f && timestamp != -1.0f)
             freq = 1.0f / (timestamp - lasttime);
