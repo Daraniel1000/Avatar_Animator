@@ -10,12 +10,18 @@ namespace Assets.Scripts.Data
         public readonly OneEuroFilter<Vector3> posFilter = new(20, 0.5f, 0.2f);
         public readonly OneEuroFilter<Quaternion> rotFilter = new(20, 0.5f, 0.1f);
 
+        private readonly Quaternion baseRotation;
+
         public Bone(string name)
         {
             bone = GameObject.Find(name);
             if (bone == null)
             {
                 Debug.Log($"{name} not found");
+            }
+            else
+            {
+                baseRotation = bone.transform.rotation;
             }
         }
 
@@ -32,6 +38,11 @@ namespace Assets.Scripts.Data
         public void SetRotation(Quaternion rotation)
         {
             bone.transform.rotation = rotFilter.Filter(rotation, Time.unscaledTime);
+        }
+
+        public void SetRelativeRotation(Quaternion rotation)
+        {
+            bone.transform.rotation = rotFilter.Filter(rotation, Time.unscaledTime) * baseRotation;
         }
     }
 

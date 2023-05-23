@@ -438,6 +438,8 @@ namespace MessagePack.Formatters.Assets.Scripts
     {
         // Landmarks
         private static global::System.ReadOnlySpan<byte> GetSpan_Landmarks() => new byte[1 + 9] { 169, 76, 97, 110, 100, 109, 97, 114, 107, 115 };
+        // Landmarks2D
+        private static global::System.ReadOnlySpan<byte> GetSpan_Landmarks2D() => new byte[1 + 11] { 171, 76, 97, 110, 100, 109, 97, 114, 107, 115, 50, 68 };
         // MultiHandedness
         private static global::System.ReadOnlySpan<byte> GetSpan_MultiHandedness() => new byte[1 + 15] { 175, 77, 117, 108, 116, 105, 72, 97, 110, 100, 101, 100, 110, 101, 115, 115 };
 
@@ -450,9 +452,11 @@ namespace MessagePack.Formatters.Assets.Scripts
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(2);
+            writer.WriteMapHeader(3);
             writer.WriteRaw(GetSpan_Landmarks());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Serialize(ref writer, value.Landmarks, options);
+            writer.WriteRaw(GetSpan_Landmarks2D());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Serialize(ref writer, value.Landmarks2D, options);
             writer.WriteRaw(GetSpan_MultiHandedness());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scripts.MultiHandednessData>>(formatterResolver).Serialize(ref writer, value.MultiHandedness, options);
         }
@@ -483,6 +487,11 @@ namespace MessagePack.Formatters.Assets.Scripts
 
                         ____result.Landmarks = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Deserialize(ref reader, options);
                         continue;
+                    case 11:
+                        if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_Landmarks2D().Slice(1))) { goto FAIL; }
+
+                        ____result.Landmarks2D = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
                     case 15:
                         if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_MultiHandedness().Slice(1))) { goto FAIL; }
 
@@ -503,6 +512,8 @@ namespace MessagePack.Formatters.Assets.Scripts
         private static global::System.ReadOnlySpan<byte> GetSpan_index() => new byte[1 + 5] { 165, 105, 110, 100, 101, 120 };
         // label
         private static global::System.ReadOnlySpan<byte> GetSpan_label() => new byte[1 + 5] { 165, 108, 97, 98, 101, 108 };
+        // score
+        private static global::System.ReadOnlySpan<byte> GetSpan_score() => new byte[1 + 5] { 165, 115, 99, 111, 114, 101 };
 
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Assets.Scripts.MultiHandednessData value, global::MessagePack.MessagePackSerializerOptions options)
         {
@@ -513,11 +524,13 @@ namespace MessagePack.Formatters.Assets.Scripts
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(2);
+            writer.WriteMapHeader(3);
             writer.WriteRaw(GetSpan_index());
             writer.Write(value.index);
             writer.WriteRaw(GetSpan_label());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.label, options);
+            writer.WriteRaw(GetSpan_score());
+            writer.Write(value.score);
         }
 
         public global::Assets.Scripts.MultiHandednessData Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -550,6 +563,9 @@ namespace MessagePack.Formatters.Assets.Scripts
                                 continue;
                             case 465557414252UL:
                                 ____result.label = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 435711599475UL:
+                                ____result.score = reader.ReadSingle();
                                 continue;
                         }
 
