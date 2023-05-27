@@ -15,7 +15,6 @@ namespace Assets.Scripts
     public class HandsMediapipeData
     {
         public List<List<Vec3>> Landmarks { get; set; }
-        public List<List<Vec3>> Landmarks2D { get; set; }
         public List<MultiHandednessData> MultiHandedness { get; set;}
     }
 

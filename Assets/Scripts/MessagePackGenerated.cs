@@ -438,8 +438,6 @@ namespace MessagePack.Formatters.Assets.Scripts
     {
         // Landmarks
         private static global::System.ReadOnlySpan<byte> GetSpan_Landmarks() => new byte[1 + 9] { 169, 76, 97, 110, 100, 109, 97, 114, 107, 115 };
-        // Landmarks2D
-        private static global::System.ReadOnlySpan<byte> GetSpan_Landmarks2D() => new byte[1 + 11] { 171, 76, 97, 110, 100, 109, 97, 114, 107, 115, 50, 68 };
         // MultiHandedness
         private static global::System.ReadOnlySpan<byte> GetSpan_MultiHandedness() => new byte[1 + 15] { 175, 77, 117, 108, 116, 105, 72, 97, 110, 100, 101, 100, 110, 101, 115, 115 };
 
@@ -452,11 +450,9 @@ namespace MessagePack.Formatters.Assets.Scripts
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(3);
+            writer.WriteMapHeader(2);
             writer.WriteRaw(GetSpan_Landmarks());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Serialize(ref writer, value.Landmarks, options);
-            writer.WriteRaw(GetSpan_Landmarks2D());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Serialize(ref writer, value.Landmarks2D, options);
             writer.WriteRaw(GetSpan_MultiHandedness());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Assets.Scripts.MultiHandednessData>>(formatterResolver).Serialize(ref writer, value.MultiHandedness, options);
         }
@@ -486,11 +482,6 @@ namespace MessagePack.Formatters.Assets.Scripts
                         if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_Landmarks().Slice(1))) { goto FAIL; }
 
                         ____result.Landmarks = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Deserialize(ref reader, options);
-                        continue;
-                    case 11:
-                        if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_Landmarks2D().Slice(1))) { goto FAIL; }
-
-                        ____result.Landmarks2D = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Assets.Scenes.FaceTracking.Vec3>>>(formatterResolver).Deserialize(ref reader, options);
                         continue;
                     case 15:
                         if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_MultiHandedness().Slice(1))) { goto FAIL; }

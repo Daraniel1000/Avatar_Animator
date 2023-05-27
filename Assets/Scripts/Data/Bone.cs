@@ -3,23 +3,16 @@ using UnityEngine;
 
 namespace Assets.Scripts.Data
 {
-    public class Bone
+    public class Bone: BoneBase
     {
-        public GameObject bone { get; private set; }
-
         public readonly OneEuroFilter<Vector3> posFilter = new(20, 0.5f, 0.2f);
         public readonly OneEuroFilter<Quaternion> rotFilter = new(20, 0.5f, 0.1f);
 
         private readonly Quaternion baseRotation;
 
-        public Bone(string name)
+        public Bone(string name): base(name)
         {
-            bone = GameObject.Find(name);
-            if (bone == null)
-            {
-                Debug.Log($"{name} not found");
-            }
-            else
+            if (bone != null)
             {
                 baseRotation = bone.transform.rotation;
             }
@@ -46,42 +39,39 @@ namespace Assets.Scripts.Data
         }
     }
 
-    public class BonePos
+    public class BonePos : BoneBase
     {
-        public GameObject bone { get; private set; }
-        
-        private readonly OneEuroFilter<Vector3> boneFilter = new(20, 0.5f, 0.1f);
+        private readonly OneEuroFilter<Vector3> posFilter;
 
-        public BonePos(string name)
+        public BonePos(string name) : base(name) 
         {
-            bone = GameObject.Find(name);
-            if (bone == null)
-            {
-                Debug.Log($"{name} not found");
-            }
+            posFilter = new(20, 0.5f, 0.1f);
+        }
+
+        public BonePos(string name, float mincutoff, float beta) : base(name)
+        {
+            posFilter = new(20, mincutoff, beta);
         }
 
         public void SetPosition(Vector3 position)
         {
-            bone.transform.position = boneFilter.Filter(position, Time.unscaledTime);
+            bone.transform.position = posFilter.Filter(position, Time.unscaledTime);
+        }
+
+        public void SetRelativePosition(Vector3 position, Vector3 offset)
+        {
+            bone.transform.position = posFilter.Filter(position, Time.unscaledTime) + offset;
         }
     }
 
-    public class BoneRot
+    public class BoneRot : BoneBase
     {
-        public GameObject bone { get; private set; }
-
         private readonly Quaternion baseRotation;
-        private readonly OneEuroFilter<Quaternion> boneFilter = new(20, 0.6f, 0.5f);
+        private readonly OneEuroFilter<Quaternion> rotFilter = new(20, 0.6f, 0.5f);
 
-        public BoneRot(string name)
+        public BoneRot(string name) : base(name)
         {
-            bone = GameObject.Find(name);
-            if (bone == null)
-            {
-                Debug.Log($"{name} not found");
-            }
-            else
+            if (bone != null)
             {
                 baseRotation = bone.transform.rotation;
             }
@@ -89,7 +79,12 @@ namespace Assets.Scripts.Data
 
         public void SetRotation(Quaternion rotation)
         {
-            bone.transform.rotation = boneFilter.Filter(rotation, Time.unscaledTime) * baseRotation;
+            bone.transform.rotation = rotFilter.Filter(rotation, Time.unscaledTime) * baseRotation;
+        }
+
+        public void SetRelativeRotation(Quaternion rotation)
+        {
+            bone.transform.rotation = rotFilter.Filter(rotation, Time.unscaledTime) * baseRotation;
         }
     }
 
@@ -125,6 +120,20 @@ namespace Assets.Scripts.Data
             {
                 bones[i].transform.localRotation = filtered * baseRotations[i];
 
+            }
+        }
+    }
+
+    public abstract class BoneBase
+    {
+        public GameObject bone { get; private set; }
+
+        public BoneBase(string name)
+        {
+            bone = GameObject.Find(name);
+            if (bone == null)
+            {
+                Debug.Log($"{name} not found");
             }
         }
     }

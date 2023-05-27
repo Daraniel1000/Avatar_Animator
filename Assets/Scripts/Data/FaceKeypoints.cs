@@ -23,6 +23,7 @@ namespace Assets.Scenes.FaceTracking
             y = other.y;
             z = other.z;
         }
+
         public static Vec3 FromVector(Vector3 other)
         {
             return new Vec3(other);
@@ -30,6 +31,15 @@ namespace Assets.Scenes.FaceTracking
         public Vector3 ToVector()
         {
             return new Vector3(x, y, z);
+        }
+
+        public static Vec3 operator +(Vec3 v1, Vec3 v2)
+        {
+            return new Vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+        }
+        public static Vec3 operator -(Vec3 v1, Vec3 v2)
+        {
+            return new Vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
         }
     }
 

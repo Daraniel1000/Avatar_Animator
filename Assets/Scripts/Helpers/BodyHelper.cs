@@ -8,26 +8,15 @@ namespace Assets.Scripts.Helpers
 {
     public class BodyHelper
     {
-        private readonly BonePos leftArmHint, rightArmHint, leftArmTarget, rightArmTarget;
         private readonly BoneRot spineRotator;
         private readonly List<GameObject> previewObjects = new(33);
-        private readonly GameObject rArmRoot, lArmRoot;
         private float scaleY = -1f;
-        private readonly BoneRot[] hands;
+        private readonly HandHelper[] hands;
 
         public BodyHelper(GameObject prefab)
         {
             spineRotator = new BoneRot("Spine.001");
-
-            leftArmTarget = new BonePos("LH IK Target");
-            leftArmHint = new BonePos("LH IK Hint");
-            rightArmTarget = new BonePos("RH IK Target");
-            rightArmHint = new BonePos("RH IK Hint");
-
-            rArmRoot = GameObject.Find("Arm.R");
-            lArmRoot = GameObject.Find("Arm.L");
-
-            hands = new BoneRot[] { new("LH IK Rotator"), new("RH IK Rotator") };
+            hands = new HandHelper[] { new("L"), new("R") };
 
             for (int i = 0; i<=42; ++i)
             {
@@ -44,11 +33,6 @@ namespace Assets.Scripts.Helpers
                     previewObjects[i].transform.position = data.Hands.Landmarks[0][i].ToVector().scaleY(-1);
                     previewObjects[i].name = i.ToString();
                 }
-                for (int i = 0; i < 21; i++)
-                {
-                    previewObjects[i+21].transform.position = data.Hands.Landmarks2D[0][i].ToVector().scaleY(-1);
-                    previewObjects[i+21].name = i.ToString();
-                }
             }
             //for (int i = 0; i < data.Body.Count; i++)
             //{
@@ -59,27 +43,26 @@ namespace Assets.Scripts.Helpers
 
         public void HandleBodyUpdate(BodyData data)
         {
-
-            int i = 0;
+            // Get body twist and angle from shoulder vector
+            Vector3 shoulderRot = GetShoulderRot(data);
+            spineRotator.SetRotation(Quaternion.Euler(shoulderRot * 180));
+            int i = 0, j;
             foreach (var hand in data.Hands.MultiHandedness)
             {
                 if (hand.score < .7f)
                     continue;
-                int j = hand.label == "Left" ? 1 : 0;
-                HandleHandUpdate(data.Hands.Landmarks[i], data.Hands.Landmarks2D[i++], j);
+                j = hand.label == "Left" ? 1 : 0; //reverse of our rig
+                hands[j].HandleHandUpdate(data.Hands.Landmarks[i++], data.Body, j);
             }
 
-            // Get body twist and angle from shoulder vector
-            Vector3 shoulderRot = GetShoulderRot(data);
-            spineRotator.SetRotation(Quaternion.Euler(shoulderRot * 180));
 
             // Arm location rig
-            Vector3 rArmOffset = rArmRoot.transform.position - data.Body[12].ToVector().scaleY(scaleY);
-            Vector3 lArmOffset = lArmRoot.transform.position - data.Body[11].ToVector().scaleY(scaleY);
-            rightArmTarget.SetPosition(data.Body[16].ToVector().scaleY(scaleY) + rArmOffset);
-            rightArmHint.SetPosition(data.Body[14].ToVector().scaleY(scaleY) + rArmOffset);
-            leftArmTarget.SetPosition(data.Body[15].ToVector().scaleY(scaleY) + lArmOffset);
-            leftArmHint.SetPosition(data.Body[13].ToVector().scaleY(scaleY) + lArmOffset);
+            //Vector3 rArmOffset = rArmRoot.transform.position - data.Body[12].ToVector().scaleY(scaleY);
+            //Vector3 lArmOffset = lArmRoot.transform.position - data.Body[11].ToVector().scaleY(scaleY);
+            //rightArmTarget.SetPosition(data.Body[16].ToVector().scaleY(scaleY) + rArmOffset);
+            //rightArmHint.SetPosition(data.Body[14].ToVector().scaleY(scaleY) + rArmOffset);
+            //leftArmTarget.SetPosition(data.Body[15].ToVector().scaleY(scaleY) + lArmOffset);
+            //leftArmHint.SetPosition(data.Body[13].ToVector().scaleY(scaleY) + lArmOffset);
 
             // Neck location rig, currently retired
             //Vector3 shoulderMidpoint = Vector3.Lerp(data.Body[12].ToVector(), data.Body[11].ToVector(), 0.5f).scaleY(scaleY);
@@ -105,22 +88,6 @@ namespace Assets.Scripts.Helpers
             spine.x = 0;
 
             return spine;
-        }
-
-        private void HandleHandUpdate(List<Vec3> data, List<Vec3>data2D, int idx)
-        {
-            var rot = GetHandLookVectors(data, idx);
-            hands[idx].SetRotation(Quaternion.LookRotation(rot.Item1, rot.Item2));
-        }
-
-        private Tuple<Vector3, Vector3> GetHandLookVectors(List<Vec3> data, int idx)
-        {
-            var points = new Vector3[] { data[0].ToVector().scaleY(scaleY), data[5].ToVector().scaleY(scaleY), data[17].ToVector().scaleY(scaleY) };
-            var front = (idx == 0 ? 1 : -1) * Vector3.Cross(points[2] - points[0], points[1] - points[2]).normalized;
-            var midpoint = Vector3.Lerp(points[1], points[2], .5f);
-            var up = midpoint - points[0];
-            up.Normalize();
-            return new Tuple<Vector3, Vector3>(front, up);
         }
 
         //public Vector3 GetFaceRot(FaceMediapipeData data)
