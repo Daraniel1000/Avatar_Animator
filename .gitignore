@@ -74,7 +74,6 @@ StyleCopReport.xml
 *_p.c
 *_h.h
 *.ilk
-*.meta
 *.obj
 *.iobj
 *.pch
@@ -97,6 +96,10 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.meta
+!*.fbx.meta
+!*.unity.meta
+!Assets/*.meta
 
 # Chutzpah Test files
 _Chutzpah*
