@@ -10,11 +10,10 @@ public class HandHelper
 {
     private readonly BoneRot handRotation;
     private readonly BonePos[] fingers;
-    private readonly GameObject[] fingerBones;
     private readonly GameObject armRoot;
     private readonly BonePos armTarget, armHint;
 
-    private readonly float scaleY = -1f, scaleFinger = 1.1f;
+    private readonly float scaleY = -1f, scaleFinger = 1f;
     private readonly string hand;
     private readonly int armRootIdx, armTargetIdx, armHintIdx;
 
@@ -44,14 +43,6 @@ public class HandHelper
             new BonePos($"{hand}Pinky Target1", mincutoff, beta),
             new BonePos($"{hand}Pinky Target2", mincutoff, beta),
         };
-        fingerBones = new GameObject[]
-        {
-            GameObject.Find($"{hand}Thumb.001"),
-            GameObject.Find($"{hand}Index.000"),
-            GameObject.Find($"{hand}Middle.000"),
-            GameObject.Find($"{hand}Ring.000"),
-            GameObject.Find($"{hand}Pinky.000"),
-        };
         if (hand == "R")
         {
             armRootIdx = 12;
@@ -80,28 +71,26 @@ public class HandHelper
 
         Vector3[] positions = new Vector3[]
         {
-            (data[4] - data[2]).ToVector().scaleY(scaleY),
-            (data[6] - data[5]).ToVector().scaleY(scaleY),
-            (data[7] - data[5]).ToVector().scaleY(scaleY),
-            (data[8] - data[5]).ToVector().scaleY(scaleY),
-            (data[10] - data[9]).ToVector().scaleY(scaleY),
-            (data[11] - data[9]).ToVector().scaleY(scaleY),
-            (data[12] - data[9]).ToVector().scaleY(scaleY),
-            (data[14] - data[13]).ToVector().scaleY(scaleY),
-            (data[15] - data[13]).ToVector().scaleY(scaleY),
-            (data[16] - data[13]).ToVector().scaleY(scaleY),
-            (data[18] - data[17]).ToVector().scaleY(scaleY),
-            (data[19] - data[17]).ToVector().scaleY(scaleY),
-            (data[20] - data[17]).ToVector().scaleY(scaleY),
+            (data[4] - data[0]).ToVector().scaleY(scaleY),
+            (data[6] - data[0]).ToVector().scaleY(scaleY),
+            (data[7] - data[0]).ToVector().scaleY(scaleY),
+            (data[8] - data[0]).ToVector().scaleY(scaleY),
+            (data[10] - data[0]).ToVector().scaleY(scaleY),
+            (data[11] - data[0]).ToVector().scaleY(scaleY),
+            (data[12] - data[0]).ToVector().scaleY(scaleY),
+            (data[14] - data[0]).ToVector().scaleY(scaleY),
+            (data[15] - data[0]).ToVector().scaleY(scaleY),
+            (data[16] - data[0]).ToVector().scaleY(scaleY),
+            (data[18] - data[0]).ToVector().scaleY(scaleY),
+            (data[19] - data[0]).ToVector().scaleY(scaleY),
+            (data[20] - data[0]).ToVector().scaleY(scaleY),
         };
+        Vector3 offset = armTarget.bone.transform.position;
 
-
-        fingers[0].SetRelativePosition(positions[0], fingerBones[0].transform.position);
-        for (int i = 1; i < fingerBones.Length; i++)
+        fingers[0].SetRelativePosition(positions[0], offset);
+        for (int i = 1; i < fingers.Length; i++)
         {
-            fingers[i * 3 - 2].SetRelativePosition(positions[i * 3 - 2] * scaleFinger, fingerBones[i].transform.position);
-            fingers[i * 3 - 1].SetRelativePosition(positions[i * 3 - 1] * scaleFinger, fingerBones[i].transform.position);
-            fingers[i * 3].SetRelativePosition(positions[i * 3], fingerBones[i].transform.position);
+            fingers[i].SetRelativePosition(positions[i] * scaleFinger, offset);
         }
     }
 

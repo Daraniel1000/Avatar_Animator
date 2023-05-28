@@ -12,6 +12,7 @@ namespace Assets.Scripts.Helpers
         private readonly List<GameObject> previewObjects = new(33);
         private float scaleY = -1f;
         private readonly HandHelper[] hands;
+        private readonly GameObject rhtgt;
 
         public BodyHelper(GameObject prefab)
         {
@@ -22,6 +23,7 @@ namespace Assets.Scripts.Helpers
             {
                 previewObjects.Add(GameObject.Instantiate(prefab));
             }
+            rhtgt = GameObject.Find("RH IK Target");
         }
 
         public void Preview(BodyData data)
@@ -30,7 +32,7 @@ namespace Assets.Scripts.Helpers
             {
                 for (int i = 0; i < 21; i++)
                 {
-                    previewObjects[i].transform.position = data.Hands.Landmarks[0][i].ToVector().scaleY(-1);
+                    previewObjects[i].transform.position = data.Hands.Landmarks[0][i].ToVector().scaleY(-1) - data.Hands.Landmarks[0][0].ToVector().scaleY(-1) + rhtgt.transform.position;
                     previewObjects[i].name = i.ToString();
                 }
             }
