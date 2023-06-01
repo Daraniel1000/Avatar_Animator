@@ -32,7 +32,7 @@ namespace Assets.Scripts
         {
             try
             {
-                StreamReader config = new StreamReader("Assets/RigVertices.txt");
+                StreamReader config = new StreamReader("Assets/RigVerticesArkit.txt");
                 string[] s;
                 boneNames.Clear();
                 vertexNumbers.Clear();

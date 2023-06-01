@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Collections;
-using Unity.Networking.Transport;
 using System.Collections.Generic;
 using Assets.Scripts;
 using UnityEngine.UI;
@@ -9,7 +8,6 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Newtonsoft.Json;
 using Assets.Scenes.FaceTracking;
 using MessagePack;
 using MessagePack.Resolvers;
