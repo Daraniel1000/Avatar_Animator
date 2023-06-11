@@ -79,7 +79,7 @@ public class ServerBehaviour : MonoBehaviour
         message = receiver.PopMobileMessage();
         if (message != null)
         {
-            updateText.text = $"ArCore: {nframes1} since";
+            updateText.text = $"ArKit: {nframes1} since";
             nframes1 = -1;
             using (var stream = new MemoryStream(message))
             {
