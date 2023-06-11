@@ -88,9 +88,11 @@ public class HandHelper
         Vector3 offset = armTarget.bone.transform.position;
 
         fingers[0].SetRelativePosition(positions[0], offset);
-        for (int i = 1; i < fingers.Length; i++)
+        for (int i = 1; i * 3 < fingers.Length; i++)
         {
-            fingers[i].SetRelativePosition(positions[i] * scaleFinger, offset);
+            fingers[i * 3 - 2].SetRelativePosition(positions[i * 3 - 2] * scaleFinger, offset);
+            fingers[i * 3 - 1].SetRelativePosition(positions[i * 3 - 1] * scaleFinger, offset);
+            fingers[i * 3].SetRelativePosition(positions[i * 3] * scaleFinger + rot.Item1 * .01f, offset);
         }
     }
 

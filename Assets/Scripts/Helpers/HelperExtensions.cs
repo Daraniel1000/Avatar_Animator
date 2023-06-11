@@ -25,6 +25,24 @@ namespace Assets.Scripts
             return a;
         }
 
+        public static Quaternion scaleZ(this Quaternion a, float scale)
+        {
+            a.z *= scale;
+            return a;
+        }
+
+        public static Quaternion scaleX(this Quaternion a, float scale)
+        {
+            a.x *= scale;
+            return a;
+        }
+
+        public static Quaternion scaleY(this Quaternion a, float scale)
+        {
+            a.y *= scale;
+            return a;
+        }
+
         public static Vector3 scaleX(this Vector3 a, float scale)
         {
             a.x *= scale;

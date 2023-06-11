@@ -66,7 +66,7 @@ namespace Assets.Scripts
 
         public void HandleFaceUpdate(FaceKeypoints keypoints)
         {
-            faceRotator.transform.rotation = calibrationRotation * keypoints.rot.ToQuaternion() * baseRotation;
+            faceRotator.transform.rotation = (calibrationRotation * keypoints.rot.ToQuaternion().scaleZ(-1).scaleY(-1) * baseRotation);
             if (keypoints.vertices.Count > 0)
             {
                 int i = 0;
