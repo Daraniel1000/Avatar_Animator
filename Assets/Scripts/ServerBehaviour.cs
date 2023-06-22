@@ -91,6 +91,14 @@ public class ServerBehaviour : MonoBehaviour
         ++nframes1;
     }
 
+    private void LateUpdate()
+    {
+        if(nframes == 0)
+        {
+            bodyHelper.resetFingerRotations();
+        }
+    }
+
     private void CalculateFramerate()
     {
         if (m_timeCounter < m_refreshTime)

@@ -92,6 +92,14 @@ namespace Assets.Scripts.Helpers
             return spine;
         }
 
+        public void resetFingerRotations()
+        {
+            foreach (var hand in hands)
+            {
+                hand.resetFingerRotations();
+            }
+        }
+
         //public Vector3 GetFaceRot(FaceMediapipeData data)
         //{
         //    // Find 3 vectors that form a plane to represent the head

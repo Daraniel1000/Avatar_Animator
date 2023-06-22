@@ -8,13 +8,14 @@ namespace Assets.Scripts.Data
         public readonly OneEuroFilter<Vector3> posFilter = new(20, 0.5f, 0.2f);
         public readonly OneEuroFilter<Quaternion> rotFilter = new(20, 0.5f, 0.1f);
 
-        private readonly Quaternion baseRotation;
+        private readonly Quaternion baseRotation, baseLocalRot;
 
         public Bone(string name): base(name)
         {
             if (bone != null)
             {
                 baseRotation = bone.transform.rotation;
+                baseLocalRot = bone.transform.localRotation;
             }
         }
 
@@ -58,9 +59,9 @@ namespace Assets.Scripts.Data
             bone.transform.position = posFilter.Filter(position, Time.unscaledTime);
         }
 
-        public void SetRelativePosition(Vector3 position, Vector3 offset)
+        public Vector3 SetRelativePosition(Vector3 position, Vector3 offset)
         {
-            bone.transform.position = posFilter.Filter(position, Time.unscaledTime) + offset;
+            return bone.transform.position = posFilter.Filter(position, Time.unscaledTime) + offset;
         }
     }
 
@@ -68,12 +69,15 @@ namespace Assets.Scripts.Data
     {
         private readonly Quaternion baseRotation;
         private readonly OneEuroFilter<Quaternion> rotFilter = new(20, 0.6f, 0.5f);
+        private readonly Vector3 baseLocalRot;
+        private static readonly float radconst = Mathf.PI/180f;
 
         public BoneRot(string name) : base(name)
         {
             if (bone != null)
             {
                 baseRotation = bone.transform.rotation;
+                baseLocalRot = bone.transform.localEulerAngles;
             }
         }
 
@@ -84,7 +88,21 @@ namespace Assets.Scripts.Data
 
         public void SetRelativeRotation(Quaternion rotation)
         {
-            bone.transform.rotation = rotFilter.Filter(rotation, Time.unscaledTime) * baseRotation;
+            bone.transform.localRotation = rotFilter.Filter(rotation, Time.unscaledTime);// * baseRotation;
+        }
+
+        public void SetXRotation(float x)
+        {
+            if (x < 45) x = Mathf.Sin(2 * x * radconst);
+            else x *= 1 + Mathf.Sin(3.6f * (x - 45) * radconst) / 2;
+            bone.transform.localRotation = rotFilter.Filter(Quaternion.Euler(x, baseLocalRot.y, baseLocalRot.z), Time.unscaledTime);
+        }
+
+        public void SetXRotationSeg2(float x)
+        {
+            if (x <= 45) x = Mathf.Sin(2*x*radconst);
+            else x *= 1 + Mathf.Sin(3.6f*(x-45)*radconst)/2;
+            bone.transform.localRotation = rotFilter.Filter(Quaternion.Euler(x, baseLocalRot.y, baseLocalRot.z), Time.unscaledTime);
         }
     }
 
