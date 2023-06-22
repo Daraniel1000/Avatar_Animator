@@ -93,15 +93,15 @@ namespace Assets.Scripts.Data
 
         public void SetXRotation(float x)
         {
-            if (x < 45) x = Mathf.Sin(2 * x * radconst);
-            else x *= 1 + Mathf.Sin(3.6f * (x - 45) * radconst) / 2;
+            if (x < 45) x *= Mathf.Pow(x / 45, 2);
+            else x *= 1 + Mathf.Sin(3.6f * (x - 45) * radconst) / 3;
             bone.transform.localRotation = rotFilter.Filter(Quaternion.Euler(x, baseLocalRot.y, baseLocalRot.z), Time.unscaledTime);
         }
 
         public void SetXRotationSeg2(float x)
         {
-            if (x <= 45) x = Mathf.Sin(2*x*radconst);
-            else x *= 1 + Mathf.Sin(3.6f*(x-45)*radconst)/2;
+            if (x <= 45) x *= Mathf.Pow(x / 45, 2); //Mathf.Sin(2*x*radconst);
+            else x *= 1 + Mathf.Sin((x - 45) * radconst) / 4;
             bone.transform.localRotation = rotFilter.Filter(Quaternion.Euler(x, baseLocalRot.y, baseLocalRot.z), Time.unscaledTime);
         }
     }
