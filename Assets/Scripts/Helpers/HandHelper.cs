@@ -108,9 +108,9 @@ public class HandHelper
         Vector3 correction = rot.Item1 * .015f;
 
         fingerRots[1][0].SetXRotation(Vector3.Angle((data[7] - data[6]).ToVector().scaleY(scaleY), (data[6] - data[5]).ToVector().scaleY(scaleY)));
-        fingerRots[1][1].SetXRotation(Vector3.Angle((data[8] - data[7]).ToVector().scaleY(scaleY) + correction, (data[7] - data[6]).ToVector().scaleY(scaleY)));
+        fingerRots[1][1].SetXRotationSeg2(Vector3.Angle((data[8] - data[7]).ToVector().scaleY(scaleY) + correction, (data[7] - data[6]).ToVector().scaleY(scaleY)));
         fingerRots[2][0].SetXRotation(Vector3.Angle((data[11] - data[10]).ToVector().scaleY(scaleY), (data[10] - data[9]).ToVector().scaleY(scaleY)));
-        fingerRots[2][1].SetXRotation(Vector3.Angle((data[12] - data[11]).ToVector().scaleY(scaleY) + correction, (data[11] - data[10]).ToVector().scaleY(scaleY)));
+        fingerRots[2][1].SetXRotationSeg2(Vector3.Angle((data[12] - data[11]).ToVector().scaleY(scaleY) + correction, (data[11] - data[10]).ToVector().scaleY(scaleY)));
         fingerRots[3][0].SetXRotation(Vector3.Angle((data[15] - data[14]).ToVector().scaleY(scaleY), (data[14] - data[13]).ToVector().scaleY(scaleY)));
         fingerRots[3][1].SetXRotation(Vector3.Angle((data[16] - data[15]).ToVector().scaleY(scaleY), (data[15] - data[14]).ToVector().scaleY(scaleY)));
         fingerRots[4][0].SetXRotation(Vector3.Angle((data[19] - data[18]).ToVector().scaleY(scaleY), (data[18] - data[17]).ToVector().scaleY(scaleY)));

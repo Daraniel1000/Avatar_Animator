@@ -100,8 +100,9 @@ namespace Assets.Scripts.Data
 
         public void SetXRotationSeg2(float x)
         {
-            if (x <= 45) x *= Mathf.Sin(2*x*radconst); //Mathf.Pow(x / 45, 2); 
-            else x *= 1 + Mathf.Sin((x - 45) * radconst) / 4;
+            if (x <= 45) x = /*Mathf.Sin(2*x*radconst);*/ Mathf.Pow(x / 45, 2);
+            else x *= 1 + Mathf.Sin(3.6f * (x - 45) * radconst) / 3;
+            //else x *= 1 + Mathf.Sin((x - 45) * radconst) / 4;
             bone.transform.localRotation = rotFilter.Filter(Quaternion.Euler(x, baseLocalRot.y, baseLocalRot.z), Time.unscaledTime);
         }
     }
